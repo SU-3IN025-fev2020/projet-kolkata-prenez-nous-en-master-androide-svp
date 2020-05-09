@@ -15,6 +15,8 @@ import glo
 import random 
 import numpy as np
 import sys
+import astar
+import strat1
 
 
 
@@ -84,70 +86,108 @@ def main():
                      if (x,y) not in wallStates or  goalStates] 
     
     #-------------------------------
+    # initialisation des gains
+    #-------------------------------
+    gains=[0]*nbPlayers
+    
+
+    for i in range(iterations):
+    
+    #-------------------------------
     # Placement aleatoire des joueurs, en évitant les obstacles
     #-------------------------------
-        
-    posPlayers = initStates
+        posPlayers = initStates
 
     
-    for j in range(nbPlayers):
-        x,y = random.choice(allowedStates)
-        players[j].set_rowcol(x,y)
-        game.mainiteration()
-        posPlayers[j]=(x,y)
+        for j in range(nbPlayers):
+            x,y = random.choice(allowedStates)
+            players[j].set_rowcol(x,y)
+            game.mainiteration()
+            posPlayers[j]=(x,y)
+        
+        
+        #-------------------------------
+        # chaque joueur choisit un restaurant
+        #-------------------------------
 
+        restau=strat1.choixResto(nbPlayers,nbRestaus)
+        remplissage=[0]*nbRestaus
+       
 
         
         
-    
-    #-------------------------------
-    # chaque joueur choisit un restaurant
-    #-------------------------------
-
-    restau=[0]*nbPlayers
-    for j in range(nbPlayers):
-        c = random.randint(0,nbRestaus-1)
-        print(c)
-        restau[j]=c
-    
-    #-------------------------------
-    # Boucle principale de déplacements 
-    #-------------------------------
-    
         
-    # bon ici on fait juste plusieurs random walker pour exemple...
+        #-------------------------------
+        # Boucle principale de déplacements 
+        #-------------------------------
     
-    for i in range(iterations):
-        
-        for j in range(nbPlayers): # on fait bouger chaque joueur séquentiellement
-            row,col = posPlayers[j]
-
-            x_inc,y_inc = random.choice([(0,1),(0,-1),(1,0),(-1,0)])
-            next_row = row+x_inc
-            next_col = col+y_inc
-            # and ((next_row,next_col) not in posPlayers)
-            if ((next_row,next_col) not in wallStates) and next_row>=0 and next_row<=19 and next_col>=0 and next_col<=19:
-                players[j].set_rowcol(next_row,next_col)
-                print ("pos :", j, next_row,next_col)
-                game.mainiteration()
-    
-                col=next_col
-                row=next_row
-                posPlayers[j]=(row,col)
-            
-      
-        
-            
-            # si on est à l'emplacement d'un restaurant, on s'arrête
-            if (row,col) == restau[j]:
-                #o = players[j].ramasse(game.layers)
-                game.mainiteration()
-                print ("Le joueur ", j, " est à son restaurant.")
-               # goalStates.remove((row,col)) # on enlève ce goalState de la liste
+        enRoute=[-1]*nbPlayers
+        while -1 in enRoute:
+            for j in range(nbPlayers): # on fait bouger chaque joueur séquentiellement
+                if(enRoute[j]==-1):
                 
-                
-                break
+                    row,col = posPlayers[j]
+
+                    #x_inc,y_inc = random.choice([(0,1),(0,-1),(1,0),(-1,0)])
+                    
+                    #creation du chemin avec A*
+                    
+                    chemin=astar.astar(posPlayers[j],goalStates[restau[j]],wallStates)
+                    if(len(chemin)>1):
+                        x_inc,y_inc = chemin[1]
+                    else:
+                        x_inc,y_inc=posPlayers[j]
+                    
+                    
+                    next_row = x_inc
+                    next_col = y_inc
+                    #next_row = row+x_inc
+                    #next_col = col+y_inc
+                    # and ((next_row,next_col) not in posPlayers)
+                    if ((next_row,next_col) not in wallStates) and next_row>=0 and next_row<=19 and next_col>=0 and next_col<=19:
+                        players[j].set_rowcol(next_row,next_col)
+                        print ("pos :", j, next_row,next_col)
+                        game.mainiteration()
             
+                        col=next_col
+                        row=next_row
+                        posPlayers[j]=(row,col)
+                    
+              
+                
+                    
+                    # si on est à l'emplacement d'un restaurant, on s'arrête
+                    if (row,col) == goalStates[restau[j]]:
+                        #o = players[j].ramasse(game.layers)
+                        game.mainiteration()
+                        enRoute[j]=restau[j]
+                        print ("Le joueur ", j, " est à son restaurant.")
+                        remplissage[restau[j]]+=1
+                        print ("Le restaurant ", restau[j], " compte ", remplissage[restau[j]]," clients.")
+                        #goalStates.remove((row,col)) # on enlève ce goalState de la liste
+                        
+                        #break
+        #-------------------------------
+        # FIN Boucle principale de déplacements 
+        #-------------------------------                 
+        
+        for rem in range(len(remplissage)):
+            if(remplissage[rem]==0):
+                pass
+            elif(remplissage[rem]==1):
+                for jou in range(len(enRoute)):
+                    if(enRoute[jou]==rem):
+                        gains[jou]+=1
+            else:
+                tabClients=[]
+                for jou in range(len(enRoute)):
+                    if(enRoute[jou]==rem):
+                        tabClients.append(jou)
+                clientContent=random.choice(tabClients)
+                gains[clientContent]+=1
+        print ("gains : ", gains)
+        print ("frequentation : ", remplissage)        
+                    
     
     pygame.quit()
     
