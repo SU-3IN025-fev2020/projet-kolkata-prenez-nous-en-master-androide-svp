@@ -18,6 +18,7 @@ import sys
 import astar
 import strat1
 import strat2
+import strat3
 
 
     
@@ -109,9 +110,17 @@ def main():
         #-------------------------------
         # chaque joueur choisit un restaurant
         #-------------------------------
-
+        
+        """Strat full random"""
         #restau=strat1.choixResto(nbPlayers,nbRestaus)
-        restau=strat2.choixResto(nbPlayers,nbRestaus,iterations)
+        """Strat choix identique"""
+        #if(iterations==0):
+        #    restau=[0]*nbPlayers
+        #restau=strat2.choixResto(nbPlayers,nbRestaus,iterations,restau)
+        """Strat resto le plus proche"""
+        restau=strat3.choixResto(nbPlayers,nbRestaus,posPlayers,goalStates,wallStates)
+        
+        
         remplissage=[0]*nbRestaus
        
 

@@ -17,9 +17,7 @@ import numpy as np
 import sys
 import astar
 
-def choixResto(nbPlayers,nbRestaus,iteration):
-    
-    restau=[0]*nbPlayers
+def choixResto(nbPlayers,nbRestaus,iteration,restau):
     if(iteration==0):
         for j in range(nbPlayers):
             c = random.randint(0,nbRestaus-1)
@@ -27,4 +25,5 @@ def choixResto(nbPlayers,nbRestaus,iteration):
             restau[j]=c
         return restau
     return restau
+        
         
