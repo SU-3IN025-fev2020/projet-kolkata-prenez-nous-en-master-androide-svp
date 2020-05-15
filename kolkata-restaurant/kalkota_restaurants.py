@@ -17,7 +17,7 @@ import numpy as np
 import sys
 import astar
 import strat1
-
+import strat2
 
 
     
@@ -110,7 +110,8 @@ def main():
         # chaque joueur choisit un restaurant
         #-------------------------------
 
-        restau=strat1.choixResto(nbPlayers,nbRestaus)
+        #restau=strat1.choixResto(nbPlayers,nbRestaus)
+        restau=strat2.choixResto(nbPlayers,nbRestaus,iterations)
         remplissage=[0]*nbRestaus
        
 

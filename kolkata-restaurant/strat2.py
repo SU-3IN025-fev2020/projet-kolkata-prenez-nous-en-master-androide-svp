@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#Strategie aleatoire
+#meme restau
 
 from __future__ import absolute_import, print_function, unicode_literals
 from gameclass import Game,check_init_game_done
@@ -17,12 +17,14 @@ import numpy as np
 import sys
 import astar
 
-def choixResto(nbPlayers,nbRestaus):
+def choixResto(nbPlayers,nbRestaus,iteration):
+    
     restau=[0]*nbPlayers
-    for j in range(nbPlayers):
-        c = random.randint(0,nbRestaus-1)
-        print(c)
-        restau[j]=c
+    if(iteration==0):
+        for j in range(nbPlayers):
+            c = random.randint(0,nbRestaus-1)
+            print(c)
+            restau[j]=c
+        return restau
     return restau
         
-    
