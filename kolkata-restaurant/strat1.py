@@ -25,4 +25,3 @@ def choixResto(nbPlayers,nbRestaus):
         restau[j]=c
     return restau
         
-    
